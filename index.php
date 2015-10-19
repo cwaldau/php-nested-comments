@@ -112,63 +112,81 @@
 	}
 
 ?>
+<!doctype html>
 
-<h1>Nested Comments Thread #1</h1>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
 
-<?php
-	$related_id = 1;
-?>
+	<title>Nested Comments</title>
+	<meta name="description" content="Nested Comments">
+	<meta name="author" content="Christopher Waldau">
 
-<form action="<?php echo $_SERVER['SELF']; ?>" method="post">
-	<textarea name="comment" id="comment">Create a new top level comment in thread #1</textarea>
-	<input type="hidden" name="related_id" value="<?php echo $related_id; ?>">
-	<input type="hidden" name="parent_id" value="<?php echo getParentIdByRelatedId($related_id); ?>">
-	<input type="submit" name="submit_btn">
-</form>
+	<!--[if lt IE 9]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+</head>
 
-<?php
-	$count = 0;
-	foreach(findCommentsByRelatedId($related_id) as $comments):
-		if($comments['depth'] == 1) $count++;
-?>
-	<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><b><?php echo 'Comment #' . $count . ' - Reply #' . $comments['depth'] . ': ';?></b></span><br>
-	<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><?php echo $comments['comment']; ?></span>
-	<form action="<?php echo $_SERVER['SELF']; ?>" method="post" style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;">
-		<textarea name="comment" id="comment">Reply to this comment</textarea>
+<body>
+	
+	<h1>Nested Comments Thread #1</h1>
+	
+	<?php
+		$related_id = 1;
+	?>
+	
+	<form action="<?php echo $_SERVER['SELF']; ?>" method="post">
+		<textarea name="comment" id="comment">Create a new top level comment in thread #1</textarea>
 		<input type="hidden" name="related_id" value="<?php echo $related_id; ?>">
-		<input type="hidden" name="parent_id" value="<?php echo $comments['id']; ?>">
+		<input type="hidden" name="parent_id" value="<?php echo getParentIdByRelatedId($related_id); ?>">
 		<input type="submit" name="submit_btn">
-	</form>
-<?php
-	endforeach;
-?>
-
-<h1>Nested Comments Thread #2</h1>
-
-<?php
-	$related_id = 2;
-?>
-
-<form action="<?php echo $_SERVER['SELF']; ?>" method="post">
-	<textarea name="comment" id="comment">Create a new top level comment in thread #2</textarea>
-	<input type="hidden" name="related_id" value="<?php echo $related_id; ?>">
-	<input type="hidden" name="parent_id" value="<?php echo getParentIdByRelatedId($related_id); ?>">
-	<input type="submit" name="submit_btn">
-</form>
-
-<?php
-	$count = 0;
-	foreach(findCommentsByRelatedId($related_id) as $comments):
-		if($comments['depth'] == 1) $count++;
-?>
-	<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><b><?php echo 'Comment #' . $count . ' - Reply #' . $comments['depth'] . ': ';?></b></span><br>
-	<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><?php echo $comments['comment']; ?></span>
-	<form action="<?php echo $_SERVER['SELF']; ?>" method="post" style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;">
-		<textarea name="comment" id="comment">Reply to this comment</textarea>
-		<input type="hidden" name="parent_id" value="<?php echo $comments['id']; ?>">
+	</form><br>
+	
+	<?php
+		$count = 0;
+		foreach(findCommentsByRelatedId($related_id) as $comments):
+			if($comments['depth'] == 1) $count++;
+	?>
+		<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><b><?php echo 'Comment #' . $count . ' - Reply #' . $comments['depth'] . ': ';?></b></span><br>
+		<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><?php echo $comments['comment']; ?></span>
+		<form action="<?php echo $_SERVER['SELF']; ?>" method="post" style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;">
+			<textarea name="comment" id="comment">Reply to this comment</textarea>
+			<input type="hidden" name="related_id" value="<?php echo $related_id; ?>">
+			<input type="hidden" name="parent_id" value="<?php echo $comments['id']; ?>">
+			<input type="submit" name="submit_btn">
+		</form>
+	<?php
+		endforeach;
+	?>
+	
+	<h1>Nested Comments Thread #2</h1>
+	
+	<?php
+		$related_id = 2;
+	?>
+	
+	<form action="<?php echo $_SERVER['SELF']; ?>" method="post">
+		<textarea name="comment" id="comment">Create a new top level comment in thread #2</textarea>
 		<input type="hidden" name="related_id" value="<?php echo $related_id; ?>">
+		<input type="hidden" name="parent_id" value="<?php echo getParentIdByRelatedId($related_id); ?>">
 		<input type="submit" name="submit_btn">
-	</form>
-<?php
-	endforeach;
-?>
+	</form><br>
+	
+	<?php
+		$count = 0;
+		foreach(findCommentsByRelatedId($related_id) as $comments):
+			if($comments['depth'] == 1) $count++;
+	?>
+		<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><b><?php echo 'Comment #' . $count . ' - Reply #' . $comments['depth'] . ': ';?></b></span><br>
+		<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><?php echo $comments['comment']; ?></span>
+		<form action="<?php echo $_SERVER['SELF']; ?>" method="post" style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;">
+			<textarea name="comment" id="comment">Reply to this comment</textarea>
+			<input type="hidden" name="parent_id" value="<?php echo $comments['id']; ?>">
+			<input type="hidden" name="related_id" value="<?php echo $related_id; ?>">
+			<input type="submit" name="submit_btn">
+		</form>
+	<?php
+		endforeach;
+	?>
+</body>
+</html>
