@@ -1,5 +1,9 @@
 <?php
 	
+	// for timestamps conversion
+	// please see https://github.com/cwal/convert-timestamp-to-time-ago for this script
+	include('timestampConvertToTimeAgo.php');
+	
 	// connection details
 	$servername = "localhost";
 	$username = "";
@@ -147,7 +151,7 @@
 		foreach(findCommentsByRelatedId($related_id) as $comments):
 			if($comments['depth'] == 1) $count++;
 	?>
-		<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><b><?php echo 'Comment #' . $count . ' - Reply #' . $comments['depth'] . ': ';?></b></span><br>
+		<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><b><?php echo 'Comment #' . $count . ' - Reply #' . $comments['depth'] . ': ';?></b> <i>(posted <?php echo timestampConvertToTimeAgo($comments['created']); ?>)</i></span><br>
 		<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><?php echo $comments['comment']; ?></span>
 		<form action="<?php echo $_SERVER['SELF']; ?>" method="post" style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;">
 			<textarea name="comment" id="comment">Reply to this comment</textarea>
@@ -177,7 +181,7 @@
 		foreach(findCommentsByRelatedId($related_id) as $comments):
 			if($comments['depth'] == 1) $count++;
 	?>
-		<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><b><?php echo 'Comment #' . $count . ' - Reply #' . $comments['depth'] . ': ';?></b></span><br>
+		<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><b><?php echo 'Comment #' . $count . ' - Reply #' . $comments['depth'] . ': ';?></b> <i>(posted <?php echo timestampConvertToTimeAgo($comments['created']); ?>)</i></span><br>
 		<span style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;"><?php echo $comments['comment']; ?></span>
 		<form action="<?php echo $_SERVER['SELF']; ?>" method="post" style="margin-left:<?php echo $comments['depth'] * 2; ?>0px;">
 			<textarea name="comment" id="comment">Reply to this comment</textarea>
