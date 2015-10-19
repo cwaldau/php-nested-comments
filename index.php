@@ -1,21 +1,21 @@
 <?php
 	
-// connection details
-$servername = "localhost";
-$username = "";
-$password = "";
-$dbname = "";
-	
-try 
-{
-	$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	//echo "Connected successfully"; 
-}
-catch(PDOException $e)
-{
-	echo "Connection failed: " . $e->getMessage();
-}
+	// connection details
+	$servername = "localhost";
+	$username = "";
+	$password = "";
+	$dbname = "";
+		
+	try 
+	{
+		$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		//echo "Connected successfully"; 
+	}
+	catch(PDOException $e)
+	{
+		echo "Connection failed: " . $e->getMessage();
+	}
 
 	// find all the comments associated with a certain thread
 	function findCommentsByRelatedId($related_id)
