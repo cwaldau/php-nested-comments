@@ -1,39 +1,40 @@
 <?php
 	
-	// connection details
-	$servername = "localhost";
-	$username = "";
-	$password = "";
-	$dbname = "";
+// connection details
+$servername = "localhost";
+$username = "";
+$password = "";
+$dbname = "";
 	
-	try 
-	{
-	    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		//echo "Connected successfully"; 
-    }
-	catch(PDOException $e)
-    {
-    	echo "Connection failed: " . $e->getMessage();
-    }
+try 
+{
+	$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	//echo "Connected successfully"; 
+}
+catch(PDOException $e)
+{
+	echo "Connection failed: " . $e->getMessage();
+}
 
 	// find all the comments associated with a certain thread
 	function findCommentsByRelatedId($related_id)
 	{
 		global $conn;
+		
 		$sql = 	"
-				SELECT  UserComment.*, (COUNT(Ghost.id) - 1) AS depth
-				FROM (user_comments AS UserComment, user_comments as Ghost)
-									    
-				WHERE	UserComment.lft BETWEEN Ghost.lft AND Ghost.rgt
-				AND		Ghost.related_id = :related_id
-				AND		UserComment.related_id = :related_id
-				AND		UserComment.parent_id is not null
-									
-				GROUP BY UserComment.id
-				ORDER BY UserComment.lft
-				LIMIT 50
-				"; // arbitrary limit
+			SELECT  UserComment.*, (COUNT(Ghost.id) - 1) AS depth
+			FROM (user_comments AS UserComment, user_comments as Ghost)
+								    
+			WHERE	UserComment.lft BETWEEN Ghost.lft AND Ghost.rgt
+			AND		Ghost.related_id = :related_id
+			AND		UserComment.related_id = :related_id
+			AND		UserComment.parent_id is not null
+								
+			GROUP BY UserComment.id
+			ORDER BY UserComment.lft
+			LIMIT 50
+			"; // arbitrary limit
 		$stmt = $conn->prepare($sql);
 		$stmt->execute(array('related_id' => $related_id));
 		$res = $stmt->fetchAll();
@@ -51,14 +52,15 @@
 	function getParentIdByRelatedId($related_id)
 	{
 		global $conn;
+		
 		$sql = 	"
-				SELECT  UserComment.*
-				FROM user_comments AS UserComment
-									    
-				WHERE	UserComment.related_id = :related_id
-				AND		UserComment.parent_id is null
-				LIMIT 1
-				";
+			SELECT  UserComment.*
+			FROM user_comments AS UserComment
+			
+			WHERE	UserComment.related_id = :related_id
+			AND	UserComment.parent_id is null
+			LIMIT 1
+			";
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->execute(array('related_id' => $related_id));
@@ -84,19 +86,19 @@
 		
 		// insert the new comment
 		$sql = 	"
-				INSERT INTO user_comments (comment, related_id, created, modified, parent_id) VALUES (:comment, :related_id, :created, :modified, :parent_id)
-				";
+			INSERT INTO user_comments (comment, related_id, created, modified, parent_id) VALUES (:comment, :related_id, :created, :modified, :parent_id)
+			";
 		
 		$stmt = $conn->prepare($sql);
 		$stmt->execute(array('comment' => $comment, 'related_id' => $related_id, 'created' => date("Y-m-d H:i:s"), 'modified' => date("Y-m-d H:i:s"), 'parent_id' => $parent_id));
 		$inserted_id = $conn->lastInsertId();
 		
 		// update lft/rgt values for all associated comments
-		$sql = "SELECT @myRight := rgt FROM user_comments WHERE id = :parent_id;" . // get the parent comments rgt value, set it as a mysql variable to be used below
-			   "UPDATE user_comments SET lft = lft + 2 WHERE related_id = :related_id AND lft >= @myRight;" . // any comment with a lft greater than @myRight, add 2 to it
-			   "UPDATE user_comments SET rgt = rgt + 2 WHERE related_id = :related_id AND rgt >= @myRight;" . // any comment with a rgt greater than @myRight, add 2 to it
-			   "UPDATE user_comments SET lft = @myRight WHERE id = :inserted_id;" . // updated the newly inserted comment with a lft value equal to the @myRight value
-			   "UPDATE user_comments SET rgt = @myRight + 1 WHERE id = :inserted_id;"; // updated the newly inserted comment with a rgt value equal to the @myRight value + 1
+		$sql =	"SELECT @myRight := rgt FROM user_comments WHERE id = :parent_id;" . // get the parent comments rgt value, set it as a mysql variable to be used below
+			"UPDATE user_comments SET lft = lft + 2 WHERE related_id = :related_id AND lft >= @myRight;" . // any comment with a lft greater than @myRight, add 2 to it
+			"UPDATE user_comments SET rgt = rgt + 2 WHERE related_id = :related_id AND rgt >= @myRight;" . // any comment with a rgt greater than @myRight, add 2 to it
+			"UPDATE user_comments SET lft = @myRight WHERE id = :inserted_id;" . // updated the newly inserted comment with a lft value equal to the @myRight value
+			"UPDATE user_comments SET rgt = @myRight + 1 WHERE id = :inserted_id;"; // updated the newly inserted comment with a rgt value equal to the @myRight value + 1
 		$stmt = $conn->prepare($sql);
 		$stmt->execute(array('related_id' => $related_id, 'parent_id' => $parent_id, 'inserted_id' => $inserted_id));
 		
